@@ -72,33 +72,36 @@
     }
 
     /* ---------- Reveal on scroll ---------- */
-    var reveals = $$('.reveal');
-    if ('IntersectionObserver' in window && !reduceMotion) {
-        var rv = new IntersectionObserver(function (entries) {
-            entries.forEach(function (en) {
-                if (en.isIntersecting) { en.target.classList.add('is-in'); rv.unobserve(en.target); }
-            });
-        }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
-        reveals.forEach(function (el) { rv.observe(el); });
-    } else {
-        reveals.forEach(function (el) { el.classList.add('is-in'); });
+    var rv = ('IntersectionObserver' in window && !reduceMotion) ? new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) {
+            if (en.isIntersecting) { en.target.classList.add('is-in'); rv.unobserve(en.target); }
+        });
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' }) : null;
+    // Call again after injecting new .reveal elements (e.g. portfolio cards)
+    function watchReveals() {
+        $$('.reveal:not(.is-in):not([data-w])').forEach(function (el) {
+            el.setAttribute('data-w', '1');
+            if (rv) rv.observe(el); else el.classList.add('is-in');
+        });
     }
+    watchReveals();
     // Hero content animates in right away on load
     requestAnimationFrame(function () {
         $$('.hero .reveal').forEach(function (el) { el.classList.add('is-in'); });
     });
 
     /* ---------- Animated counters ---------- */
+    function fmt(v, dec) { return v.toLocaleString('en-IN', { minimumFractionDigits: dec, maximumFractionDigits: dec }); }
     function runCount(el) {
         var to = parseFloat(el.getAttribute('data-to'));
         var dec = parseInt(el.getAttribute('data-dec') || '0', 10);
-        if (reduceMotion) { el.textContent = to.toFixed(dec); return; }
+        if (reduceMotion) { el.textContent = fmt(to, dec); return; }
         var t0 = null, dur = 1600;
         function step(t) {
             if (t0 === null) t0 = t;
             var p = Math.min(1, (t - t0) / dur);
             var eased = 1 - Math.pow(1 - p, 4);
-            el.textContent = (to * eased).toFixed(dec);
+            el.textContent = fmt(to * eased, dec);
             if (p < 1) requestAnimationFrame(step);
         }
         requestAnimationFrame(step);
@@ -154,99 +157,108 @@
         });
     });
 
-    /* ---------- Pavement layer composer ---------- */
-    var svg = $('#labSvg');
-    if (svg) {
-        var NS2 = 'http://www.w3.org/2000/svg';
-        var X0 = 96, W = 360, Y0 = 56, SCALE = 0.27, Y_END = 360;
-        var layers = [
-            { id: 'l1', name: 'Bituminous', colour: 'var(--l1)' },
-            { id: 'l2', name: 'WMM base', colour: 'var(--l2)' },
-            { id: 'l3', name: 'GSB sub-base', colour: 'var(--l3)' }
-        ];
+    /* ---------- Portfolio: render cards, résumé list and detail dialog ---------- */
+    var projects = window.PROJECTS || [];
+    function esc(t) {
+        return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
+    function icon(name) { return '<svg class="i"><use href="#i-' + name + '" /></svg>'; }
+    function ampHtml(t) { return esc(t).replace(/&amp;/g, '<span class="amp">&amp;</span>'); }
+    function pad(n) { return (n < 10 ? '0' : '') + n; }
+    function figsHtml(p) {
+        return p.figs.map(function (f) { return '<div><b>' + esc(f[0]) + '</b><span>' + esc(f[1]) + '</span></div>'; }).join('');
+    }
 
-        function el(tag, attrs, parent) {
-            var n = document.createElementNS(NS2, tag);
-            Object.keys(attrs || {}).forEach(function (k) { n.setAttribute(k, attrs[k]); });
-            (parent || svg).appendChild(n);
-            return n;
+    var grid = $('#projectGrid');
+    if (grid) {
+        grid.innerHTML = projects.map(function (p, i) {
+            var cover = p.cover
+                ? '<img src="' + esc(p.cover) + '" alt="' + esc(p.title) + '" loading="lazy" decoding="async">'
+                : '<div class="ph" aria-hidden="true"><span class="ph__n">' + pad(i + 1) + '</span><span class="ph__lbl">' + icon('image') + ' Project media</span></div>';
+            return '<article class="project reveal' + (p.featured ? ' project--wide' : '') + '" style="--d:' + ((i % 3) * 0.08) + 's">' +
+                '<div class="project__media">' + cover +
+                '<span class="project__sector">' + esc(p.sector) + '</span>' +
+                (p.status ? '<span class="project__status"><span class="dot dot--pulse"></span>' + esc(p.status) + '</span>' : '') +
+                '</div>' +
+                '<div class="project__body">' +
+                '<span class="tag-num">' + pad(i + 1) + ' · ' + esc(p.period) + '</span>' +
+                '<h3 class="h3">' + ampHtml(p.title) + (p.subtitle ? '<small>' + esc(p.subtitle) + '</small>' : '') + '</h3>' +
+                '<p>' + esc(p.summary) + '</p>' +
+                '<div class="figs">' + figsHtml(p) + '</div>' +
+                '<button class="link" type="button" data-open="' + esc(p.id) + '">View project details ' + icon('arrow-ur') + '</button>' +
+                '</div></article>';
+        }).join('');
+    }
+
+    watchReveals();
+
+    // Résumé "Key projects" list
+    var sheetList = $('#sheetProjects');
+    if (sheetList) {
+        sheetList.innerHTML = projects.map(function (p) {
+            return '<li><div class="sheet__row"><strong>' + esc(p.title) + '</strong><span>' + esc(p.period) + '</span></div>' +
+                '<em>' + esc(p.client) + '</em>' +
+                '<p>' + esc(p.figs.map(function (f) { return f[0] + ' (' + f[1] + ')'; }).join(' · ')) + '</p></li>';
+        }).join('');
+    }
+
+    // Detail dialog
+    var dlg = $('#projectDialog');
+    var dlgBody = $('#dlgBody');
+    var lastTrigger = null;
+
+    function mediaHtml(p) {
+        if (p.media && p.media.length) {
+            return '<div class="gallery">' + p.media.map(function (m) {
+                var cap = m.caption ? '<figcaption>' + esc(m.caption) + '</figcaption>' : '';
+                if (m.type === 'video') {
+                    return '<figure class="gallery__item gallery__item--video"><video controls preload="metadata"' +
+                        (m.poster ? ' poster="' + esc(m.poster) + '"' : '') + '><source src="' + esc(m.src) + '"></video>' + cap + '</figure>';
+                }
+                return '<figure class="gallery__item"><img src="' + esc(m.src) + '" alt="' + esc(m.alt || p.title) + '" loading="lazy" decoding="async">' + cap + '</figure>';
+            }).join('') + '</div>';
         }
+        return '<div class="gallery gallery--empty">' +
+            '<div class="gallery__ph">' + icon('image') + '<span>Site photograph</span></div>' +
+            '<div class="gallery__ph">' + icon('image') + '<span>Site photograph</span></div>' +
+            '<div class="gallery__ph">' + icon('play') + '<span>Project video</span></div></div>';
+    }
 
-        // defs: subgrade hatch + clip so stress bulbs stay inside the section
-        var defs = el('defs');
-        var pat = el('pattern', { id: 'hatch', width: 10, height: 10, patternUnits: 'userSpaceOnUse', patternTransform: 'rotate(45)' }, defs);
-        el('rect', { width: 10, height: 10, fill: 'var(--l4)' }, pat);
-        el('line', { x1: 0, y1: 0, x2: 0, y2: 10, stroke: 'rgba(0,0,0,.28)', 'stroke-width': 3 }, pat);
-        var clip = el('clipPath', { id: 'labClip' }, defs);
-        el('rect', { x: X0, y: Y0, width: W, height: Y_END - Y0 }, clip);
+    function openProject(id, trigger) {
+        var p = projects.filter(function (x) { return x.id === id; })[0];
+        if (!p || !dlg || typeof dlg.showModal !== 'function') return;
+        lastTrigger = trigger || null;
+        var facts = [['Period', p.period], ['Location', p.location], ['Client', p.client], ['Role', p.role]];
+        dlgBody.innerHTML =
+            '<button class="dlg__close icon-btn" type="button" data-close aria-label="Close project details">' + icon('x') + '</button>' +
+            '<div class="dlg__body">' +
+            '<span class="kicker">' + esc(p.sector) + (p.status ? ' · ' + esc(p.status) : '') + '</span>' +
+            '<h3 class="dlg__title" id="dlgTitle">' + ampHtml(p.title) + '</h3>' +
+            '<p class="dlg__formal">' + esc(p.formal) + '</p>' +
+            '<div class="figs figs--lg">' + figsHtml(p) + '</div>' +
+            '<dl class="facts">' + facts.map(function (f) { return '<div><dt>' + f[0] + '</dt><dd>' + esc(f[1]) + '</dd></div>'; }).join('') + '</dl>' +
+            '<h4 class="dlg__h">Project features</h4><p>' + esc(p.features) + '</p>' +
+            '<h4 class="dlg__h">Activities performed</h4><ul class="ticks">' + p.did.map(function (d) { return '<li>' + esc(d) + '</li>'; }).join('') + '</ul>' +
+            (p.takeaway ? '<div class="takeaway"><span class="tag-num">Key learning</span><p>' + esc(p.takeaway) + '</p></div>' : '') +
+            '<h4 class="dlg__h">Photographs &amp; video</h4>' + mediaHtml(p) +
+            '</div>';
+        dlg.showModal();
+        dlg.scrollTop = 0;
+    }
 
-        // subgrade
-        var sub = el('rect', { x: X0, width: W, fill: 'url(#hatch)', class: 'lab-layer' });
-        var subLbl = el('text', { x: X0 + W / 2, 'text-anchor': 'middle', class: 'lab-lbl' });
-        subLbl.textContent = 'SUBGRADE';
-
-        var rects = {}, lbls = {}, dims = {};
-        layers.forEach(function (L) {
-            rects[L.id] = el('rect', { x: X0, width: W, fill: L.colour, class: 'lab-layer' });
-            lbls[L.id] = el('text', { x: X0 + W / 2, 'text-anchor': 'middle', class: 'lab-lbl' });
-            lbls[L.id].textContent = L.name.toUpperCase();
-            dims[L.id] = el('text', { x: X0 - 12, 'text-anchor': 'end', class: 'lab-dim' });
+    document.addEventListener('click', function (e) {
+        var opener = e.target.closest && e.target.closest('[data-open]');
+        if (opener) { openProject(opener.getAttribute('data-open'), opener); return; }
+        if (e.target.closest && e.target.closest('[data-close]') && dlg) { dlg.close(); return; }
+        if (dlg && e.target === dlg) dlg.close(); // backdrop click
+    });
+    if (dlg) {
+        dlg.addEventListener('close', function () {
+            $$('video', dlg).forEach(function (v) { v.pause(); });
+            if (lastTrigger) lastTrigger.focus();
         });
-
-        // stress bulb arcs under the wheel load
-        var bulbs = el('g', { 'clip-path': 'url(#labClip)', fill: 'none', stroke: 'var(--accent)', 'stroke-width': 1.5, 'stroke-dasharray': '4 5', opacity: .75 });
-        [46, 92, 146, 210].forEach(function (rad, n) {
-            el('ellipse', { cx: X0 + W / 2, cy: Y0, rx: rad * 1.15, ry: rad, opacity: 1 - n * 0.2 }, bulbs);
-        });
-
-        // wheel load arrow
-        var ax = X0 + W / 2;
-        el('path', { d: 'M' + ax + ' 12 V' + (Y0 - 6) + ' M' + (ax - 8) + ' ' + (Y0 - 15) + ' L' + ax + ' ' + (Y0 - 5) + ' L' + (ax + 8) + ' ' + (Y0 - 15), fill: 'none', stroke: 'var(--accent)', 'stroke-width': 2.5, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
-        var load = el('text', { x: ax + 16, y: 28, class: 'lab-dim', fill: 'var(--accent-text)' });
-        load.textContent = 'WHEEL LOAD';
-        load.style.fill = 'var(--accent-text)';
-
-        // surface line
-        el('line', { x1: X0 - 8, x2: X0 + W + 8, y1: Y0, y2: Y0, stroke: 'var(--accent)', 'stroke-width': 2.5, 'stroke-dasharray': '10 8' });
-
-        var inputs = { l1: $('#r1'), l2: $('#r2'), l3: $('#r3') };
-        var outs = { l1: $('#o1'), l2: $('#o2'), l3: $('#o3') };
-        var totalEl = $('#labTotal');
-
-        function put(node, y, h) { node.style.y = y + 'px'; if (h !== undefined) node.style.height = h + 'px'; }
-
-        function render() {
-            var y = Y0, total = 0;
-            layers.forEach(function (L) {
-                var mm = +inputs[L.id].value;
-                var h = mm * SCALE;
-                total += mm;
-                put(rects[L.id], y, h);
-                lbls[L.id].style.transform = 'translateY(' + (y + h / 2 + 4) + 'px)';
-                lbls[L.id].style.opacity = h > 22 ? 1 : 0;
-                dims[L.id].style.transform = 'translateY(' + (y + h / 2 + 4) + 'px)';
-                dims[L.id].textContent = mm + ' mm';
-                outs[L.id].textContent = mm;
-                var inp = inputs[L.id];
-                inp.style.setProperty('--p', ((mm - inp.min) / (inp.max - inp.min)) * 100 + '%');
-                y += h;
-            });
-            put(sub, y, Y_END - y);
-            subLbl.style.transform = 'translateY(' + (y + (Y_END - y) / 2 + 4) + 'px)';
-            subLbl.style.opacity = (Y_END - y) > 22 ? 1 : 0;
-            totalEl.textContent = total;
-        }
-
-        Object.keys(inputs).forEach(function (k) { inputs[k].addEventListener('input', render); });
-        $$('.lab__presets button').forEach(function (b) {
-            b.addEventListener('click', function () {
-                var v = b.getAttribute('data-preset').split(',');
-                inputs.l1.value = v[0]; inputs.l2.value = v[1]; inputs.l3.value = v[2];
-                render();
-            });
-        });
-        // initial paint without animating from the default position
-        render();
     }
 
     /* ---------- Resume: print to PDF ---------- */
