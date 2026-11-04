@@ -20,7 +20,7 @@ Manrope (body), JetBrains Mono (labels). All colours, radii and fonts are tokens
 `Hero` · `01 About` · `02 Expertise` · `03 Experience` · `04 Portfolio` · `05 Education & research` ·
 `06 Recognition & training` · `07 Résumé` · `08 Contact`
 
-- **Résumé section = print layout.** *Download PDF* calls `window.print()`; the print stylesheet outputs only the A4 CV.
+- **Résumé section** shows the online résumé. *Download PDF* downloads `assets/Faraj-Shekh-Resume.pdf` — to update the PDF, replace that file (keep the same name).
 - **Portfolio** cards and the detail dialog are rendered from `projects.js`.
 
 ## Files
@@ -32,6 +32,7 @@ script.js         Theme, scroll effects, contours, portfolio rendering + dialog,
 projects.js       Portfolio data (one entry per project)
 assets/
   faraj-shekh.jpg       Portrait (original, un-recompressed)
+  Faraj-Shekh-Resume.pdf  The résumé PDF served by the Download button
   projects/<id>/        Put each project's photos / videos here
 ```
 

@@ -261,10 +261,6 @@
         });
     }
 
-    /* ---------- Resume: print to PDF ---------- */
-    var printBtn = $('#printBtn');
-    if (printBtn) printBtn.addEventListener('click', function () { window.print(); });
-
     /* ---------- Copy email + toast ---------- */
     var copyBtn = $('#copyMail');
     var toast = $('#toast');
