@@ -335,19 +335,12 @@ strong { font-weight: 700; color: var(--text); }
 .langs tr:last-child th, .langs tr:last-child td { border-bottom: 0; }
 
 /* ---------- Portfolio ---------- */
-.project__media { position: relative; height: 240px; background: var(--bg-alt); border-bottom: 1px solid var(--line); overflow: hidden; }
-.project__media img, .project__media video { width: 100%; height: 100%; object-fit: cover; transition: transform .9s var(--ease); }
-.project:hover .project__media img { transform: scale(1.05); }
-.ph { position: absolute; inset: 0; background:
-    radial-gradient(circle at 82% 18%, var(--glow), transparent 55%),
-    repeating-radial-gradient(circle at 82% 18%, transparent 0 17px, var(--line) 17px 18px); }
-.ph__n { position: absolute; right: 22px; bottom: 6px; font-family: var(--font-display); font-style: italic; font-size: 7.5rem; line-height: 1; letter-spacing: -.05em; color: var(--accent-text); opacity: .22; transition: opacity .4s, transform .8s var(--ease); }
-.project:hover .ph__n { opacity: .4; transform: translateY(-6px); }
-.ph__lbl { position: absolute; left: 22px; bottom: 20px; display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.ph__lbl .i { width: 15px; height: 15px; }
-.project__sector { position: absolute; top: 16px; left: 16px; z-index: 2; padding: 6px 13px; border-radius: 999px; background: color-mix(in srgb, var(--bg) 78%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--line-strong); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text); }
-.project__status { position: absolute; top: 16px; right: 16px; z-index: 2; display: inline-flex; align-items: center; gap: 8px; padding: 6px 13px 6px 11px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: .7rem; font-weight: 800; letter-spacing: .03em; }
+/* project card header (sector + status) */
+.project__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 24px 28px 0; }
+.project__sector { padding: 6px 13px; border-radius: 999px; border: 1px solid var(--line-strong); font-family: var(--font-mono); font-size: .66rem; letter-spacing: .08em; text-transform: uppercase; color: var(--text); }
+.project__status { display: inline-flex; align-items: center; gap: 8px; padding: 6px 13px 6px 11px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-size: .7rem; font-weight: 800; letter-spacing: .03em; }
 .project__status .dot { background: var(--accent-ink); width: 7px; height: 7px; animation: none; box-shadow: none; }
+.project__head + .project__body { padding-top: 20px; }
 .project .h3 { font-size: 1.3rem; }
 .project .h3 small { font-size: .78rem; }
 .figs { display: flex; flex-wrap: wrap; gap: 14px 26px; padding-top: 16px; border-top: 1px solid var(--line); }
@@ -376,12 +369,6 @@ button.link { font: inherit; font-weight: 700; font-size: .88rem; }
 .facts dd { font-size: .95rem; font-weight: 600; }
 .takeaway { margin-top: 8px; padding: 20px 24px; border-radius: 14px; background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); }
 .takeaway p { color: var(--text); margin-top: 6px; font-family: var(--font-display); font-size: 1.12rem; line-height: 1.5; }
-.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-.gallery__item { margin: 0; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: var(--bg-alt); }
-.gallery__item img, .gallery__item video { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
-.gallery__item figcaption { padding: 10px 14px; font-size: .8rem; color: var(--muted); }
-.gallery__ph { aspect-ratio: 4 / 3; border-radius: 14px; border: 1px dashed var(--line-strong); display: grid; place-content: center; justify-items: center; gap: 10px; color: var(--muted); font-family: var(--font-mono); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; background: repeating-linear-gradient(135deg, transparent 0 12px, var(--line) 12px 13px); }
-.gallery__ph .i { width: 26px; height: 26px; }
 html:has(dialog[open]) { overflow: hidden; }
 
 /* ---------- Education: research panels / publications ---------- */
@@ -484,7 +471,6 @@ html:has(dialog[open]) { overflow: hidden; }
   .bento .card:nth-child(n) { grid-column: auto; }
   .projects { grid-template-columns: 1fr; }
   .project--wide { grid-column: auto; }
-  .project__media { height: 210px; }
   .edu { grid-template-columns: 1fr; }
   .facts { grid-template-columns: 1fr; }
   .training li { grid-template-columns: 1fr; gap: 4px; }

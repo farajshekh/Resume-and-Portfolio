@@ -33,23 +33,7 @@ projects.js       Portfolio data (one entry per project)
 assets/
   faraj-shekh.jpg       Portrait (original, un-recompressed)
   Faraj-Shekh-Resume.pdf  The résumé PDF served by the Download button
-  projects/<id>/        Put each project's photos / videos here
 ```
-
-## Adding project photos and videos
-
-1. Drop files into `assets/projects/<project-id>/` (ids are in `projects.js`, e.g. `expressways`, `amaravati`).
-2. In that project's entry in `projects.js`, set:
-
-```js
-cover: 'assets/projects/expressways/cover.jpg',        // card image
-media: [
-  { type: 'image', src: 'assets/projects/expressways/site-01.jpg', alt: 'Alignment survey', caption: 'Optional' },
-  { type: 'video', src: 'assets/projects/expressways/flythrough.mp4', poster: 'assets/projects/expressways/poster.jpg' }
-]
-```
-
-Until media is added, cards and the dialog show tasteful placeholders.
 
 ## Run / deploy
 

@@ -174,11 +174,8 @@
     var grid = $('#projectGrid');
     if (grid) {
         grid.innerHTML = projects.map(function (p, i) {
-            var cover = p.cover
-                ? '<img src="' + esc(p.cover) + '" alt="' + esc(p.title) + '" loading="lazy" decoding="async">'
-                : '<div class="ph" aria-hidden="true"><span class="ph__n">' + pad(i + 1) + '</span><span class="ph__lbl">' + icon('image') + ' Project media</span></div>';
             return '<article class="project reveal' + (p.featured ? ' project--wide' : '') + '" style="--d:' + ((i % 3) * 0.08) + 's">' +
-                '<div class="project__media">' + cover +
+                '<div class="project__head">' +
                 '<span class="project__sector">' + esc(p.sector) + '</span>' +
                 (p.status ? '<span class="project__status"><span class="dot dot--pulse"></span>' + esc(p.status) + '</span>' : '') +
                 '</div>' +
@@ -209,23 +206,6 @@
     var dlgBody = $('#dlgBody');
     var lastTrigger = null;
 
-    function mediaHtml(p) {
-        if (p.media && p.media.length) {
-            return '<div class="gallery">' + p.media.map(function (m) {
-                var cap = m.caption ? '<figcaption>' + esc(m.caption) + '</figcaption>' : '';
-                if (m.type === 'video') {
-                    return '<figure class="gallery__item gallery__item--video"><video controls preload="metadata"' +
-                        (m.poster ? ' poster="' + esc(m.poster) + '"' : '') + '><source src="' + esc(m.src) + '"></video>' + cap + '</figure>';
-                }
-                return '<figure class="gallery__item"><img src="' + esc(m.src) + '" alt="' + esc(m.alt || p.title) + '" loading="lazy" decoding="async">' + cap + '</figure>';
-            }).join('') + '</div>';
-        }
-        return '<div class="gallery gallery--empty">' +
-            '<div class="gallery__ph">' + icon('image') + '<span>Site photograph</span></div>' +
-            '<div class="gallery__ph">' + icon('image') + '<span>Site photograph</span></div>' +
-            '<div class="gallery__ph">' + icon('play') + '<span>Project video</span></div></div>';
-    }
-
     function openProject(id, trigger) {
         var p = projects.filter(function (x) { return x.id === id; })[0];
         if (!p || !dlg || typeof dlg.showModal !== 'function') return;
@@ -242,7 +222,6 @@
             '<h4 class="dlg__h">Project features</h4><p>' + esc(p.features) + '</p>' +
             '<h4 class="dlg__h">Activities performed</h4><ul class="ticks">' + p.did.map(function (d) { return '<li>' + esc(d) + '</li>'; }).join('') + '</ul>' +
             (p.takeaway ? '<div class="takeaway"><span class="tag-num">Key learning</span><p>' + esc(p.takeaway) + '</p></div>' : '') +
-            '<h4 class="dlg__h">Photographs &amp; video</h4>' + mediaHtml(p) +
             '</div>';
         dlg.showModal();
         dlg.scrollTop = 0;
@@ -256,7 +235,6 @@
     });
     if (dlg) {
         dlg.addEventListener('close', function () {
-            $$('video', dlg).forEach(function (v) { v.pause(); });
             if (lastTrigger) lastTrigger.focus();
         });
     }

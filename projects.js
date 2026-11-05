@@ -2,15 +2,6 @@
    PORTFOLIO DATA — one entry per project.
    Cards (#projectGrid), the detail dialog and the résumé's
    "Key projects" list are all rendered from this array.
-
-   To add photographs / videos later, drop files in
-   assets/projects/<id>/ and fill in `cover` and `media`, e.g.
-
-     cover: 'assets/projects/expressways/cover.jpg',
-     media: [
-       { type: 'image', src: 'assets/projects/expressways/site-01.jpg', alt: 'Alignment survey', caption: 'Optional caption' },
-       { type: 'video', src: 'assets/projects/expressways/flythrough.mp4', poster: 'assets/projects/expressways/poster.jpg' }
-     ]
    ============================================================ */
 window.PROJECTS = [
   {
@@ -35,9 +26,7 @@ window.PROJECTS = [
       'Identified and documented cross-drainage structures, road crossings, railway crossings and other engineering structures along the proposed alignments.',
       'Prepared technical datasets, maps and alignment analysis supporting feasibility assessment and DPR preparation.'
     ],
-    takeaway: 'Experience in greenfield corridor planning, expressway alignment design, feasibility assessment and technical documentation for large-scale highway infrastructure.',
-    cover: '',
-    media: []
+    takeaway: 'Experience in greenfield corridor planning, expressway alignment design, feasibility assessment and technical documentation for large-scale highway infrastructure.'
   },
   {
     id: 'rbd-ppu',
@@ -61,9 +50,7 @@ window.PROJECTS = [
       'After the Gambhira bridge incident, carried out daily monitoring of 158 and later 173 damaged bridges across the state, and developed automated monitoring abstracts for reporting to senior officials.',
       'Played a key role in monitoring the Tourist Connecting Roads Scheme, the Core Road Network, the White Topping Scheme and the PBMC/STMC scheme.'
     ],
-    takeaway: 'Experience in infrastructure project monitoring, institutional reporting systems, highway programme management and coordination with government officials for large-scale road development programmes.',
-    cover: '',
-    media: []
+    takeaway: 'Experience in infrastructure project monitoring, institutional reporting systems, highway programme management and coordination with government officials for large-scale road development programmes.'
   },
   {
     id: 'ch0-junction',
@@ -84,9 +71,7 @@ window.PROJECTS = [
       'Prepared design drawings and drafted and compiled the report.',
       'Coordinated with team members to integrate technical inputs into the final project documentation.'
     ],
-    takeaway: 'Hands-on experience in grade-separated junction design, traffic-flow improvement planning, geometric design development and technical reporting for intersection improvement projects.',
-    cover: '',
-    media: []
+    takeaway: 'Hands-on experience in grade-separated junction design, traffic-flow improvement planning, geometric design development and technical reporting for intersection improvement projects.'
   },
   {
     id: 'ahmedabad-mehsana',
@@ -107,9 +92,7 @@ window.PROJECTS = [
       'Extracted and compiled existing ground levels and roadside feature data for service roads and adjoining infrastructure.',
       'Assisted in preparing the design drawings required for the DPR and contract documentation.'
     ],
-    takeaway: 'Contributed to highway design refinement, contract schedules, geometric design updates and documentation for a state highway project under a PPP-based model.',
-    cover: '',
-    media: []
+    takeaway: 'Contributed to highway design refinement, contract schedules, geometric design updates and documentation for a state highway project under a PPP-based model.'
   },
   {
     id: 'amaravati',
@@ -130,9 +113,7 @@ window.PROJECTS = [
       'Responsible for the geometric design of a trumpet interchange connecting the proposed E13 corridor with NH-16, and supported preparation of design drawings and layout plans.',
       'Modelled the corridor, calculated cut and fill quantities, assisted in developing engineering drawings and compiled technical inputs for the DPR.'
     ],
-    takeaway: 'Extensive experience in greenfield highway design, interchange design, terrain data processing, corridor modelling, quantity estimation and DPR preparation for major urban connectivity projects.',
-    cover: '',
-    media: []
+    takeaway: 'Extensive experience in greenfield highway design, interchange design, terrain data processing, corridor modelling, quantity estimation and DPR preparation for major urban connectivity projects.'
   },
   {
     id: 'shantipura-khoraj',
@@ -153,9 +134,7 @@ window.PROJECTS = [
       'Prepared and compiled DPR documentation, including drafting report sections, integrating design drawings and coordinating with other technical teams.',
       'Prepared technical schedules and the RFP, and assisted in the preparation and review of the concessionaire agreement.'
     ],
-    takeaway: 'Practical experience in traffic data collection, highway widening design support, preparation of engineering drawings and DPR documentation for state highway capacity augmentation projects.',
-    cover: '',
-    media: []
+    takeaway: 'Practical experience in traffic data collection, highway widening design support, preparation of engineering drawings and DPR documentation for state highway capacity augmentation projects.'
   },
   {
     id: 'hpltrdp',
@@ -176,8 +155,6 @@ window.PROJECTS = [
       'Contributed to processing and analysis of Origin–Destination surveys at around 150 locations and axle load surveys at approximately 75 locations.',
       'Compiled survey data and prepared supporting information for the final project report.'
     ],
-    takeaway: '',
-    cover: '',
-    media: []
+    takeaway: ''
   }
 ];
